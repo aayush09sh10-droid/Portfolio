@@ -1,9 +1,12 @@
 import { useLayoutEffect, useRef } from 'react'
 import { ArrowDownRight, ArrowUpRight, Github, Linkedin, Menu, Sparkles } from 'lucide-react'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './App.css'
 import pharmaCarePreview from './assets/pharma-care.png'
 import webTutorPreview from './assets/web-tutor.png'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const projects = [
   { number: '01', name: 'Pharma Care', type: 'Full-stack healthcare platform', tags: ['React', 'Node', 'Redis'], link: 'https://pharma-care-tan.vercel.app/' },
@@ -17,6 +20,16 @@ const skillGroups = [
   ['Data', 'MongoDB · PostgreSQL · Redis'],
   ['Foundation', 'DSA · OOP · DBMS · OS · Computer Networks'],
 ]
+
+const stars = [
+  ['8%', '14%', 16], ['22%', '34%', 11], ['38%', '9%', 20], ['57%', '23%', 12],
+  ['74%', '13%', 18], ['89%', '37%', 10], ['12%', '74%', 19], ['31%', '88%', 10],
+  ['67%', '75%', 15], ['93%', '82%', 19],
+]
+
+function StarField() {
+  return <div className="star-field" aria-hidden="true">{stars.map(([x, y, size], index) => <span key={index} style={{ '--x': x, '--y': y, '--size': `${size}px`, '--delay': `${index * -.7}s` }}>✦</span>)}</div>
+}
 
 function MagneticButton({ children, className = '', ...props }) {
   const button = useRef(null)
@@ -41,6 +54,7 @@ function useLerpScroll(contentRef) {
       current += (target - current) * 0.075
       if (Math.abs(target - current) < 0.1) current = target
       content.style.transform = `translate3d(0, ${-current}px, 0)`
+      ScrollTrigger.update()
       frame = requestAnimationFrame(animate)
     }
     const observer = new ResizeObserver(setPageHeight)
@@ -99,11 +113,11 @@ function Work() {
 }
 
 function About() {
-  return <section className="about section" id="about"><p className="eyebrow">02 — The human signal</p><div className="about-content"><div className="about-sticker">OPEN<br />TO<br />WORK<span>✦</span></div><h2>Built with <i>curiosity,</i><br />made to move<br />people.</h2><div className="about-note"><p>Full-stack and backend-focused Computer Science student building scalable apps, useful APIs, and polished interfaces.</p><a href="#resume">My toolkit <ArrowDownRight size={17} /></a></div></div></section>
+  return <section className="about section scroll-reveal" id="about"><StarField /><p className="eyebrow">02 — The human signal</p><div className="about-content"><div className="about-sticker">OPEN<br />TO<br />WORK<span>✦</span></div><h2>Built with <i>curiosity,</i><br />made to move<br />people.</h2><div className="about-note"><p>Full-stack and backend-focused Computer Science student building scalable apps, useful APIs, and polished interfaces.</p><a href="#resume">My toolkit <ArrowDownRight size={17} /></a></div></div></section>
 }
 
 function Resume() {
-  return <section className="resume section" id="resume">
+  return <section className="resume section scroll-reveal" id="resume"><StarField />
     <div className="section-head"><p className="eyebrow">03 — Credentials & craft</p><h2>Code is my<br /><i>launchpad.</i></h2></div>
     <div className="resume-layout">
       <div className="experience"><p className="eyebrow">Experience</p><h3>Xebia <span>— Software Development Intern</span></h3><p className="date">JUNE 2026 — JULY 2026 · GREATER NOIDA</p><p>Focused on full-stack engineering, SDLC, team workflows, and practical problem-solving in an industry environment.</p></div>
@@ -114,7 +128,7 @@ function Resume() {
 }
 
 function Footer() {
-  return <footer id="contact"><p className="eyebrow">04 — Send a signal</p><h2>LET’S MAKE<br /><i>WAVES.</i></h2><MagneticButton className="email" href="mailto:aayush09sh10@gmail.com">Say hello <ArrowUpRight size={22} /></MagneticButton><div className="footer-bottom"><span>© 2026 Aayush Sharma</span><div><a href="https://github.com/aayush09sh10-droid" target="_blank" rel="noreferrer"><Github size={18} /> Github</a><a href="https://www.linkedin.com/in/aayushsh10/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a></div><span>Made with intent <Sparkles size={15} /></span></div></footer>
+  return <footer className="space-footer scroll-reveal" id="contact"><StarField /><p className="eyebrow">04 — Send a signal</p><h2>LET’S MAKE<br /><i>WAVES.</i></h2><MagneticButton className="email" href="mailto:aayush09sh10@gmail.com">Say hello <ArrowUpRight size={22} /></MagneticButton><div className="footer-bottom"><span>© 2026 Aayush Sharma</span><div><a href="https://github.com/aayush09sh10-droid" target="_blank" rel="noreferrer"><Github size={18} /> Github</a><a href="https://www.linkedin.com/in/aayushsh10/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a></div><span>Made with intent <Sparkles size={15} /></span></div></footer>
 }
 
 export default function App() {
@@ -133,6 +147,12 @@ export default function App() {
       name.addEventListener('pointerenter', exciteName)
       gsap.to('.orb-one', { x: -35, y: 42, duration: 5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
       gsap.to('.orb-two', { x: 30, y: -25, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.utils.toArray('.scroll-reveal').forEach((section) => {
+        gsap.fromTo(section, { opacity: 0.22, y: 100, scale: 0.965 }, {
+          opacity: 1, y: 0, scale: 1, duration: 1.25, ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 86%', toggleActions: 'play none none reverse' },
+        })
+      })
       const follower = document.querySelector('.cursor-follower')
       const moveFollower = (event) => gsap.to(follower, { x: event.clientX, y: event.clientY, duration: 0.22, ease: 'power3.out' })
       const growFollower = () => follower.classList.add('cursor-follower-active')
