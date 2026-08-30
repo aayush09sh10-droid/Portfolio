@@ -31,8 +31,8 @@ function Hero() {
   return <section className="hero" id="top">
     <div className="orb orb-one" /><div className="orb orb-two" />
     <p className="eyebrow hero-kicker"><span /> Available for select projects — 2026</p>
-    <div className="hero-title" aria-label="Digital experiences, in orbit">
-      <span className="hero-line">DIGITAL</span><span className="hero-line hero-line-shift">EXPERIENCES</span><span className="hero-line hero-line-last">IN <i>ORBIT.</i></span>
+    <div className="hero-title" aria-label="Aayush, full-stack engineer">
+      <span className="hero-line hero-name">AAYUSH</span><span className="hero-line hero-line-shift">FULL-STACK</span><span className="hero-line hero-line-last"><i>ENGINEER.</i></span>
     </div>
     <div className="hero-bottom">
       <p>I’m <strong>Aayush</strong>, a developer shaping vivid, useful interfaces for the internet’s next big ideas.</p>
@@ -67,13 +67,25 @@ function Footer() {
 export default function App() {
   const root = useRef(null)
   useLayoutEffect(() => {
+    let removeCursorListeners = () => {}
     const context = gsap.context(() => {
       gsap.from('.site-header', { y: -28, opacity: 0, duration: 0.7, ease: 'power3.out' })
       gsap.from('.hero-line', { yPercent: 115, rotate: 3, duration: 1.05, stagger: 0.12, ease: 'power4.out', delay: 0.15 })
       gsap.from('.hero-bottom, .hero-kicker', { y: 25, opacity: 0, stagger: 0.12, delay: 0.85, duration: 0.65 })
       gsap.to('.planet', { rotate: 360, duration: 75, repeat: -1, ease: 'none' })
+      const name = document.querySelector('.hero-name')
+      const exciteName = () => gsap.fromTo(name, { color: '#18cfbb', letterSpacing: '-.06em', skewX: -4 }, { color: '#fff4d5', letterSpacing: '-.09em', skewX: 0, duration: 0.65, ease: 'elastic.out(1, .45)' })
+      name.addEventListener('pointerenter', exciteName)
+      gsap.to('.orb-one', { x: -35, y: 42, duration: 5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.to('.orb-two', { x: 30, y: -25, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      removeCursorListeners = () => {
+        name.removeEventListener('pointerenter', exciteName)
+      }
     }, root)
-    return () => context.revert()
+    return () => {
+      removeCursorListeners()
+      context.revert()
+    }
   }, [])
   return <main ref={root}><Header /><Hero /><Work /><About /><Footer /></main>
 }
