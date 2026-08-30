@@ -2,7 +2,8 @@ import { useLayoutEffect, useRef } from 'react'
 import { ArrowDownRight, ArrowUpRight, Github, Linkedin, Menu, Sparkles } from 'lucide-react'
 import { gsap } from 'gsap'
 import './App.css'
-import projectPreview from './assets/project-showcase.png'
+import pharmaCarePreview from './assets/pharma-care.png'
+import webTutorPreview from './assets/web-tutor.png'
 
 const projects = [
   { number: '01', name: 'Pharma Care', type: 'Full-stack healthcare platform', tags: ['React', 'Node', 'Redis'], link: 'https://pharma-care-tan.vercel.app/' },
@@ -24,6 +25,38 @@ function MagneticButton({ children, className = '', ...props }) {
     gsap.to(button.current, { x: (event.clientX - rect.left - rect.width / 2) * 0.16, y: (event.clientY - rect.top - rect.height / 2) * 0.16, duration: 0.35 })
   }
   return <a ref={button} onMouseMove={move} onMouseLeave={() => gsap.to(button.current, { x: 0, y: 0, duration: 0.55, ease: 'elastic.out(1, .4)' })} className={`magnetic ${className}`} {...props}>{children}</a>
+}
+
+function useLerpScroll(contentRef) {
+  useLayoutEffect(() => {
+    if (window.innerWidth <= 800 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+
+    const content = contentRef.current
+    let current = window.scrollY
+    let target = current
+    let frame
+    const setPageHeight = () => { document.body.style.height = `${content.getBoundingClientRect().height}px` }
+    const onScroll = () => { target = window.scrollY }
+    const animate = () => {
+      current += (target - current) * 0.075
+      if (Math.abs(target - current) < 0.1) current = target
+      content.style.transform = `translate3d(0, ${-current}px, 0)`
+      frame = requestAnimationFrame(animate)
+    }
+    const observer = new ResizeObserver(setPageHeight)
+    observer.observe(content)
+    setPageHeight()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    animate()
+
+    return () => {
+      cancelAnimationFrame(frame)
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      document.body.style.height = ''
+      content.style.transform = ''
+    }
+  }, [contentRef])
 }
 
 function Header() {
@@ -53,7 +86,9 @@ function ProjectCard({ project, index }) {
   return <a className={`project-card project-${index}`} href={project.link || '#contact'} target={project.link ? '_blank' : undefined} rel={project.link ? 'noreferrer' : undefined}>
     <div className="project-top"><span>{project.number}</span><ArrowUpRight size={23} /></div>
     <div className="project-art">
-      {index === 0 ? <img src={projectPreview} alt="Project interface preview" /> : <div className="placeholder-art"><span>{index === 1 ? 'PHARMA' : '???'}</span></div>}
+      {index === 0 && <img src={pharmaCarePreview} alt="PharmaCare website preview" />}
+      {index === 1 && <img src={webTutorPreview} alt="Web-Tutor website preview" />}
+      {index === 2 && <div className="placeholder-art"><span>???</span></div>}
     </div>
     <div className="project-copy"><div><p>{project.type}</p><h3>{project.name}</h3></div><div className="tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
   </a>
@@ -84,6 +119,8 @@ function Footer() {
 
 export default function App() {
   const root = useRef(null)
+  const smoothContent = useRef(null)
+  useLerpScroll(smoothContent)
   useLayoutEffect(() => {
     let removeCursorListeners = () => {}
     const context = gsap.context(() => {
@@ -120,5 +157,5 @@ export default function App() {
       context.revert()
     }
   }, [])
-  return <main ref={root}><div className="cursor-follower" aria-hidden="true" /><Header /><Hero /><Work /><About /><Resume /><Footer /></main>
+  return <div className="app-shell" ref={root}><div className="cursor-follower" aria-hidden="true" /><main className="smooth-content" ref={smoothContent}><Header /><Hero /><Work /><About /><Resume /><Footer /></main></div>
 }
