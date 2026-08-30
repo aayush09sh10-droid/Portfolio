@@ -5,9 +5,16 @@ import './App.css'
 import projectPreview from './assets/project-showcase.png'
 
 const projects = [
-  { number: '01', name: 'StayWise.ai', type: 'AI travel companion', tags: ['React', 'AI', 'Product'] },
-  { number: '02', name: 'PharmaCare', type: 'Healthcare platform', tags: ['Web', 'UX', 'Build'] },
+  { number: '01', name: 'Pharma Care', type: 'Full-stack healthcare platform', tags: ['React', 'Node', 'Redis'], link: 'https://pharma-care-tan.vercel.app/' },
+  { number: '02', name: 'Web-Tut', type: 'AI-powered EdTech platform', tags: ['AI', 'React', 'EdTech'], link: 'https://web-tut-sandy.vercel.app/' },
   { number: '03', name: 'Next mission', type: 'Something good is loading', tags: ['Coming', 'Soon'] },
+]
+
+const skillGroups = [
+  ['Frontend', 'React.js · Next.js · HTML · CSS · Tailwind CSS'],
+  ['Backend', 'Node.js · Express.js · REST APIs · Authentication'],
+  ['Data', 'MongoDB · PostgreSQL · Redis'],
+  ['Foundation', 'DSA · OOP · DBMS · OS · Computer Networks'],
 ]
 
 function MagneticButton({ children, className = '', ...props }) {
@@ -43,13 +50,13 @@ function Hero() {
 }
 
 function ProjectCard({ project, index }) {
-  return <article className={`project-card project-${index}`}>
+  return <a className={`project-card project-${index}`} href={project.link || '#contact'} target={project.link ? '_blank' : undefined} rel={project.link ? 'noreferrer' : undefined}>
     <div className="project-top"><span>{project.number}</span><ArrowUpRight size={23} /></div>
     <div className="project-art">
       {index === 0 ? <img src={projectPreview} alt="Project interface preview" /> : <div className="placeholder-art"><span>{index === 1 ? 'PHARMA' : '???'}</span></div>}
     </div>
     <div className="project-copy"><div><p>{project.type}</p><h3>{project.name}</h3></div><div className="tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
-  </article>
+  </a>
 }
 
 function Work() {
@@ -57,11 +64,22 @@ function Work() {
 }
 
 function About() {
-  return <section className="about section" id="about"><p className="eyebrow">02 — The human signal</p><div className="about-content"><div className="about-sticker">OPEN<br />TO<br />WORK<span>✦</span></div><h2>Built with <i>curiosity,</i><br />made to move<br />people.</h2><div className="about-note"><p>I combine thoughtful design with solid front-end craft to create digital spaces that feel as good as they function.</p><a href="#contact">More about me <ArrowUpRight size={17} /></a></div></div></section>
+  return <section className="about section" id="about"><p className="eyebrow">02 — The human signal</p><div className="about-content"><div className="about-sticker">OPEN<br />TO<br />WORK<span>✦</span></div><h2>Built with <i>curiosity,</i><br />made to move<br />people.</h2><div className="about-note"><p>Full-stack and backend-focused Computer Science student building scalable apps, useful APIs, and polished interfaces.</p><a href="#resume">My toolkit <ArrowDownRight size={17} /></a></div></div></section>
+}
+
+function Resume() {
+  return <section className="resume section" id="resume">
+    <div className="section-head"><p className="eyebrow">03 — Credentials & craft</p><h2>Code is my<br /><i>launchpad.</i></h2></div>
+    <div className="resume-layout">
+      <div className="experience"><p className="eyebrow">Experience</p><h3>Xebia <span>— Software Development Intern</span></h3><p className="date">JUNE 2026 — JULY 2026 · GREATER NOIDA</p><p>Focused on full-stack engineering, SDLC, team workflows, and practical problem-solving in an industry environment.</p></div>
+      <div className="education"><p className="eyebrow">Education</p><h3>Bennett University</h3><p>B.Tech, Computer Science & Engineering<br />Specialization: Full-Stack</p><p className="date">AUG 2024 — AUG 2028</p></div>
+    </div>
+    <div className="skill-list">{skillGroups.map(([label, skills], index) => <div className="skill-row" key={label}><span>0{index + 1}</span><h3>{label}</h3><p>{skills}</p></div>)}</div>
+  </section>
 }
 
 function Footer() {
-  return <footer id="contact"><p className="eyebrow">03 — Send a signal</p><h2>LET’S MAKE<br /><i>WAVES.</i></h2><MagneticButton className="email" href="mailto:aayushsh10@gmail.com">Say hello <ArrowUpRight size={22} /></MagneticButton><div className="footer-bottom"><span>© 2026 Aayush</span><div><a href="https://github.com/aayush09sh10-droid" target="_blank" rel="noreferrer"><Github size={18} /> Github</a><a href="https://www.linkedin.com/in/aayushsh10/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a></div><span>Made with intent <Sparkles size={15} /></span></div></footer>
+  return <footer id="contact"><p className="eyebrow">04 — Send a signal</p><h2>LET’S MAKE<br /><i>WAVES.</i></h2><MagneticButton className="email" href="mailto:aayush09sh10@gmail.com">Say hello <ArrowUpRight size={22} /></MagneticButton><div className="footer-bottom"><span>© 2026 Aayush Sharma</span><div><a href="https://github.com/aayush09sh10-droid" target="_blank" rel="noreferrer"><Github size={18} /> Github</a><a href="https://www.linkedin.com/in/aayushsh10/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a></div><span>Made with intent <Sparkles size={15} /></span></div></footer>
 }
 
 export default function App() {
@@ -78,8 +96,23 @@ export default function App() {
       name.addEventListener('pointerenter', exciteName)
       gsap.to('.orb-one', { x: -35, y: 42, duration: 5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
       gsap.to('.orb-two', { x: 30, y: -25, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      const follower = document.querySelector('.cursor-follower')
+      const moveFollower = (event) => gsap.to(follower, { x: event.clientX, y: event.clientY, duration: 0.22, ease: 'power3.out' })
+      const growFollower = () => follower.classList.add('cursor-follower-active')
+      const shrinkFollower = () => follower.classList.remove('cursor-follower-active')
+      const interactiveElements = document.querySelectorAll('a, button, .project-card')
+      window.addEventListener('pointermove', moveFollower)
+      interactiveElements.forEach((element) => {
+        element.addEventListener('pointerenter', growFollower)
+        element.addEventListener('pointerleave', shrinkFollower)
+      })
       removeCursorListeners = () => {
         name.removeEventListener('pointerenter', exciteName)
+        window.removeEventListener('pointermove', moveFollower)
+        interactiveElements.forEach((element) => {
+          element.removeEventListener('pointerenter', growFollower)
+          element.removeEventListener('pointerleave', shrinkFollower)
+        })
       }
     }, root)
     return () => {
@@ -87,5 +120,5 @@ export default function App() {
       context.revert()
     }
   }, [])
-  return <main ref={root}><Header /><Hero /><Work /><About /><Footer /></main>
+  return <main ref={root}><div className="cursor-follower" aria-hidden="true" /><Header /><Hero /><Work /><About /><Resume /><Footer /></main>
 }
