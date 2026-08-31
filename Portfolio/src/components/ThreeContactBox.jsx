@@ -37,8 +37,20 @@ function addLidPattern(lidPivot) {
 
 function createContactCards() {
   const cards = new THREE.Group()
-  const cardMaterial = new THREE.MeshStandardMaterial({ color: '#fffdf7', roughness: 0.7 })
-  const accentMaterial = new THREE.MeshStandardMaterial({ color: '#ffd34e', roughness: 0.55 })
+  const cardMaterial = new THREE.MeshStandardMaterial({
+    color: '#fffdf7',
+    roughness: 0.72,
+    metalness: 0.08,
+    transparent: true,
+    opacity: 0.2,
+  })
+  const accentMaterial = new THREE.MeshStandardMaterial({
+    color: '#ffd34e',
+    roughness: 0.52,
+    metalness: 0.08,
+    transparent: true,
+    opacity: 0.2,
+  })
 
   ;[
     [-0.9, 0.25, 0.05, -0.2],
@@ -113,6 +125,17 @@ export default function ThreeContactBox() {
     contactCards.scale.setScalar(0.75)
     boxGroup.add(contactCards)
 
+    const cardMaterials = []
+    contactCards.traverse((object) => {
+      if (object.material) {
+        const materials = Array.isArray(object.material) ? object.material : [object.material]
+        materials.forEach((material) => {
+          material.transparent = true
+          cardMaterials.push(material)
+        })
+      }
+    })
+
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(4.1, 64),
       new THREE.ShadowMaterial({ color: '#356467', opacity: 0.25 }),
@@ -175,10 +198,18 @@ export default function ThreeContactBox() {
         interpolate(11.5, 5.4, easedProgress),
       )
       lidPivot.rotation.x = interpolate(0, -2.15, lidProgress)
-      contactCards.position.y = interpolate(-0.78, 0.55, cardProgress)
-      contactCards.rotation.y = interpolate(0, 0.24, cardProgress)
+      contactCards.position.set(
+        0,
+        interpolate(-0.78, 0.48, cardProgress),
+        interpolate(0.1, 1.4, cardProgress),
+      )
+      contactCards.rotation.y = interpolate(0, 0.22, cardProgress)
+      contactCards.rotation.x = interpolate(0.12, 0, cardProgress)
+      cardMaterials.forEach((material) => {
+        material.opacity = interpolate(0.14, 1, cardProgress)
+      })
       contactDetails.style.opacity = detailProgress
-      contactDetails.style.transform = `translateX(-50%) translateY(${interpolate(30, 0, detailProgress)}px)`
+      contactDetails.style.transform = `translateX(-50%) translateY(${interpolate(32, 0, detailProgress)}px) scale(${interpolate(0.8, 1, detailProgress)})`
       contactDetails.style.visibility = detailProgress > 0 ? 'visible' : 'hidden'
 
       render()
