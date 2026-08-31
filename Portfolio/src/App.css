@@ -325,9 +325,17 @@
 }
 
 /* Real WebGL box canvas and the HTML contact details revealed by the opening. */
+.contact-box-scroll {
+  position: relative;
+}
+
 .contact-box-scene {
+  height: min(67vw, 680px);
+  min-height: 480px;
   position: relative;
   display: block;
+  padding: 0;
+  cursor: crosshair;
 }
 
 .three-contact-box {
@@ -352,6 +360,19 @@
 }
 
 @media (max-width: 800px) {
+  .contact-box-scroll {
+    height: auto;
+  }
+
+  .contact-box-scene {
+    height: 520px;
+    min-height: 520px;
+  }
+
+  .three-contact-box {
+    height: 100%;
+  }
+
   .contact-box-content {
     bottom: 18px;
     width: calc(100% - 28px);

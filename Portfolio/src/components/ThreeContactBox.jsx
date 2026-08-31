@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import * as THREE from 'three'
-
-gsap.registerPlugin(ScrollTrigger)
 
 function createBoxMaterialSet() {
   return [
@@ -74,8 +70,9 @@ export default function ThreeContactBox() {
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.shadowMap.enabled = true
 
-    camera.position.set(0, 3.9, 9)
-    camera.lookAt(0, 0.4, 0)
+    const cameraTarget = new THREE.Vector3(0, 0.25, 0)
+    camera.position.set(-0.8, 4.8, 11.5)
+    camera.lookAt(cameraTarget)
 
     const ambientLight = new THREE.HemisphereLight('#fff7d9', '#1f3d41', 2.6)
     const keyLight = new THREE.DirectionalLight('#ffffff', 3)
@@ -84,7 +81,9 @@ export default function ThreeContactBox() {
     scene.add(ambientLight, keyLight)
 
     const boxGroup = new THREE.Group()
-    boxGroup.rotation.set(-0.08, -0.35, -0.08)
+    boxGroup.position.set(0, -1.25, -2.2)
+    boxGroup.rotation.set(-0.23, -0.6, -0.12)
+    boxGroup.scale.setScalar(0.42)
     scene.add(boxGroup)
 
     const base = new THREE.Mesh(
@@ -130,7 +129,10 @@ export default function ThreeContactBox() {
       camera.updateProjectionMatrix()
     }
 
-    const render = () => renderer.render(scene, camera)
+    const render = () => {
+      camera.lookAt(cameraTarget)
+      renderer.render(scene, camera)
+    }
     resizeRenderer()
     render()
 
@@ -140,34 +142,59 @@ export default function ThreeContactBox() {
     })
     resizeObserver.observe(canvas.parentElement)
 
-    const context = gsap.context(() => {
-      const contactDetails = canvas.parentElement.querySelector('.contact-box-content')
-      gsap.set(contactDetails, { autoAlpha: 0, y: 30 })
+    const sceneElement = canvas.parentElement
+    const contactDetails = canvas.parentElement.querySelector('.contact-box-content')
+    let animationFrame
 
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.contact-box-scene',
-          start: 'top 85%',
-          end: 'top 25%',
-          scrub: 1,
-          onUpdate: render,
-        },
-      })
-        .fromTo(
-          boxGroup.scale,
-          { x: 0.56, y: 0.56, z: 0.56 },
-          { x: 1, y: 1, z: 1, ease: 'none' },
-          0,
-        )
-        .to(boxGroup.rotation, { x: 0, y: 0.08, z: 0, ease: 'none' }, 0)
-        .to(lidPivot.rotation, { x: -1.95, ease: 'none' }, 0.42)
-        .to(contactCards.position, { y: 0.25, ease: 'none' }, 0.58)
-        .to(contactCards.rotation, { y: 0.18, ease: 'none' }, 0.58)
-        .to(contactDetails, { autoAlpha: 1, y: 0, ease: 'none' }, 0.65)
-    }, canvas.parentElement)
+    const clamp = (value) => Math.min(Math.max(value, 0), 1)
+    const interpolate = (start, end, progress) => start + (end - start) * progress
+
+    const updateSceneFromScroll = () => {
+      const { top, height } = sceneElement.getBoundingClientRect()
+      const completionDistance = (window.innerHeight + height) / 2
+      const progress = clamp((window.innerHeight - top) / completionDistance)
+      const easedProgress = progress * progress * (3 - 2 * progress)
+      const lidProgress = clamp((progress - 0.2) / 0.58)
+      const cardProgress = clamp((progress - 0.55) / 0.35)
+      const detailProgress = clamp((progress - 0.82) / 0.18)
+
+      boxGroup.position.set(
+        0,
+        interpolate(-1.25, 0.15, easedProgress),
+        interpolate(-2.2, 0.8, easedProgress),
+      )
+      boxGroup.scale.setScalar(interpolate(0.42, 1.3, easedProgress))
+      boxGroup.rotation.set(
+        interpolate(-0.23, 0, easedProgress),
+        interpolate(-0.6, 0.18, easedProgress),
+        interpolate(-0.12, 0, easedProgress),
+      )
+      camera.position.set(
+        interpolate(-0.8, 0, easedProgress),
+        interpolate(4.8, 2.75, easedProgress),
+        interpolate(11.5, 5.4, easedProgress),
+      )
+      lidPivot.rotation.x = interpolate(0, -2.15, lidProgress)
+      contactCards.position.y = interpolate(-0.78, 0.55, cardProgress)
+      contactCards.rotation.y = interpolate(0, 0.24, cardProgress)
+      contactDetails.style.opacity = detailProgress
+      contactDetails.style.transform = `translateX(-50%) translateY(${interpolate(30, 0, detailProgress)}px)`
+      contactDetails.style.visibility = detailProgress > 0 ? 'visible' : 'hidden'
+
+      render()
+    }
+
+    const handleScroll = () => {
+      cancelAnimationFrame(animationFrame)
+      animationFrame = requestAnimationFrame(updateSceneFromScroll)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    updateSceneFromScroll()
 
     return () => {
-      context.revert()
+      window.removeEventListener('scroll', handleScroll)
+      cancelAnimationFrame(animationFrame)
       resizeObserver.disconnect()
       renderer.dispose()
       scene.traverse((object) => {
