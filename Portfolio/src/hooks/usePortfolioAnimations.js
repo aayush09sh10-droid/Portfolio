@@ -72,6 +72,7 @@ export default function usePortfolioAnimations(rootRef, activeProject) {
           },
         })
       })
+
     }, rootRef)
 
     return () => context.revert()
