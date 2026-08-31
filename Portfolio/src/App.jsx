@@ -1,31 +1,34 @@
-import { useLayoutEffect, useRef, useState } from 'react'
-import { ArrowDownRight, ArrowUpRight, Github, Linkedin, Menu, Sparkles, X } from 'lucide-react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useRef, useState } from 'react'
+import About from './components/About'
+import Footer from './components/Footer'
+import Header from './components/Header'
+import Hero from './components/Hero'
+import ProjectSpotlight from './components/ProjectSpotlight'
+import Resume from './components/Resume'
+import Work from './components/Work'
+import usePortfolioAnimations from './hooks/usePortfolioAnimations'
 import './App.css'
-import pharmaCarePreview from './assets/pharma-care.png'
-import webTutorPreview from './assets/web-tutor.png'
 
-gsap.registerPlugin(ScrollTrigger)
+export default function App() {
+  const rootRef = useRef(null)
+  const [activeProject, setActiveProject] = useState(null)
 
-const projects = [
-  { number: '01', name: 'Pharma Care', type: 'Full-stack healthcare platform', tags: ['React', 'Node', 'Redis'], link: 'https://pharma-care-tan.vercel.app/', image: pharmaCarePreview, color: 'berry', description: 'PharmaCare is a full-stack healthcare platform built to make medicine discovery and ordering feel simple and reliable. It brings patients through a clear flow for finding medicines, comparing nearby pharmacy options, managing authentication, and completing orders with a responsive experience across devices.' },
-  { number: '02', name: 'Web-Tut', type: 'AI-powered EdTech platform', tags: ['AI', 'React', 'EdTech'], link: 'https://web-tut-sandy.vercel.app/', image: webTutorPreview, color: 'mint', description: 'Web-Tut is an AI-powered learning platform that helps students turn video lessons into a more useful study space. It supports focused learning through organised summaries, quiz-oriented flows, and personalised study tools, with a polished React interface designed for everyday use.' },
-  { number: '03', name: 'Next mission', type: 'Something good is loading', tags: ['Coming', 'Soon'], color: 'lime', description: 'The next digital experience is already taking shape. Let’s build it together.' },
-]
-const skillGroups = [['Frontend', 'React.js · Next.js · HTML · CSS · Tailwind CSS'], ['Backend', 'Node.js · Express.js · REST APIs · Authentication'], ['Data', 'MongoDB · PostgreSQL · Redis'], ['Foundation', 'DSA · OOP · DBMS · OS · Computer Networks']]
+  usePortfolioAnimations(rootRef, activeProject)
 
-function MagneticButton({ children, className = '', ...props }) {
-  const button = useRef(null)
-  const move = (event) => { const rect = button.current.getBoundingClientRect(); gsap.to(button.current, { x: (event.clientX - rect.left - rect.width / 2) * .12, y: (event.clientY - rect.top - rect.height / 2) * .12, duration: .3 }) }
-  return <a ref={button} onMouseMove={move} onMouseLeave={() => gsap.to(button.current, { x: 0, y: 0, duration: .5, ease: 'elastic.out(1,.4)' })} className={`magnetic ${className}`} {...props}>{children}</a>
+  return (
+    <div className="app-shell" ref={rootRef}>
+      <main>
+        <Header />
+        <Hero />
+        <Work onSelect={setActiveProject} />
+        <About />
+        <Resume />
+        <Footer />
+      </main>
+      <ProjectSpotlight
+        project={activeProject}
+        onClose={() => setActiveProject(null)}
+      />
+    </div>
+  )
 }
-function Header() { return <header className="site-header"><a className="brand" href="#top"><span className="brand-mark">A</span><span>AAYUSH</span><small>PORTFOLIO</small></a><nav><a href="#work">Projects</a><a href="#about">About</a><a className="nav-contact" href="#contact">Let’s talk <ArrowUpRight size={15} /></a></nav><button className="menu-button" aria-label="Open menu"><Menu size={22} /></button></header> }
-function Hero() { return <section className="hero" id="top"><div className="hero-shape shape-a" /><div className="hero-shape shape-b" /><div className="hero-shape shape-c" /><p className="eyebrow hero-kicker">Available for meaningful work · 2026</p><div className="hero-copy"><p className="hero-intro scroll-pop">Hello, I’m Aayush — a full-stack developer turning curious ideas into vivid, useful web experiences.</p><h1><span>AAYUSH</span><span>SHARMA</span><em>builds on the web.</em></h1></div><div className="hero-footer"><a href="#work" className="hero-button">See selected work <ArrowDownRight size={22} /></a><p>FULL-STACK DEVELOPER<br />BASED IN INDIA</p></div></section> }
-function ProjectCard({ project, index, onSelect }) { return <article className={`project-card project-${project.color}`} style={{ '--rotation': `${[-3, 1.5, -1][index]}deg` }}><button onClick={() => onSelect(project)} aria-label={`View ${project.name}`}><div className="project-top"><span>{project.number}</span><span className="card-expand">View <ArrowUpRight size={18} /></span></div><div className="project-image">{project.image ? <img src={project.image} alt={`${project.name} preview`} /> : <div className="placeholder-art"><Sparkles size={48} /><span>NEW<br />IDEA</span></div>}</div><div className="project-copy"><div className="tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div><h3>{project.name}</h3><p>{project.type}</p></div></button></article> }
-function Work({ onSelect }) { return <section className="work section" id="work"><div className="section-head"><p className="eyebrow">01 — Selected work</p><h2>Made to be<br /><i>explored.</i></h2></div><p className="section-note scroll-pop">A growing shelf of products shaped with care, curiosity, and a healthy appetite for solving the hard parts.</p><div className="project-grid">{projects.map((project, index) => <ProjectCard key={project.number} project={project} index={index} onSelect={onSelect} />)}</div></section> }
-function About() { return <section className="about section" id="about"><p className="eyebrow">02 — A little about me</p><div className="about-content"><div className="about-sticker">OPEN<br />TO<br />WORK <Sparkles size={22} /></div><h2>Built with <i>curiosity,</i><br />made to move<br />people.</h2><div className="about-note"><p className="scroll-pop">Full-stack and backend-focused Computer Science student building scalable apps, useful APIs, and polished interfaces.</p><a href="#resume">My toolkit <ArrowDownRight size={17} /></a></div></div></section> }
-function Resume() { return <section className="resume section" id="resume"><div className="section-head"><p className="eyebrow">03 — Credentials & craft</p><h2>Code is my<br /><i>launchpad.</i></h2></div><div className="resume-layout"><div className="experience"><p className="eyebrow">Experience</p><h3>Xebia <span>— Software Development Intern</span></h3><p className="date">JUNE 2026 — JULY 2026 · GREATER NOIDA</p><p>Focused on full-stack engineering, SDLC, team workflows, and practical problem-solving in an industry environment.</p></div><div className="education"><p className="eyebrow">Education</p><h3>Bennett University</h3><p>B.Tech, Computer Science & Engineering<br />Specialization: Full-Stack</p><p className="date">AUG 2024 — AUG 2028</p></div></div><div className="skill-list">{skillGroups.map(([label, skills], index) => <div className="skill-row" key={label}><span>0{index + 1}</span><h3>{label}</h3><p>{skills}</p></div>)}</div></section> }
-function Footer() { return <footer className="site-footer" id="contact"><p className="eyebrow">04 — Ready to contribute</p><div className="contact-layout"><div><h2>YOUR NEXT<br /><i>GREAT HIRE.</i></h2><p className="contact-message">I bring a builder’s mindset, strong full-stack foundations, and real care for the people using the product. Let’s turn your next idea into something dependable and memorable.</p><MagneticButton className="email" href="mailto:aayush09sh10@gmail.com">Start a conversation <ArrowUpRight size={22} /></MagneticButton></div><div className="contact-orbit" aria-label="Interactive three-dimensional developer model"><div className="orbit-ring ring-one" /><div className="orbit-ring ring-two" /><div className="orbit-core"><span>&lt;/&gt;</span><small>BUILD</small></div><span className="orbit-tag tag-one">REACT</span><span className="orbit-tag tag-two">NODE</span><span className="orbit-tag tag-three">IDEAS</span></div></div><div className="footer-bottom"><span>© 2026 Aayush Sharma</span><div><a href="https://github.com/aayush09sh10-droid" target="_blank" rel="noreferrer"><Github size={18} /> Github</a><a href="https://www.linkedin.com/in/aayushsh10/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a></div></div></footer> }
-function ProjectSpotlight({ project, onClose }) { if (!project) return null; return <div className="spotlight" role="dialog" aria-modal="true" aria-label={project.name}><button className="spotlight-backdrop" onClick={onClose} aria-label="Close project details" /><article className={`spotlight-card project-${project.color}`}><button className="close-button" onClick={onClose} aria-label="Close"><X size={24} /></button><div className="spotlight-image">{project.image ? <img src={project.image} alt="" /> : <div className="placeholder-art"><Sparkles size={70} /><span>NEW IDEA</span></div>}</div><div className="spotlight-copy"><p className="eyebrow">{project.number} — FEATURED PROJECT</p><h2>{project.name}</h2><p>{project.description}</p><div className="tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div>{project.link ? <a className="visit-link" href={project.link} target="_blank" rel="noreferrer">Visit live site <ArrowUpRight size={19} /></a> : <a className="visit-link" href="#contact" onClick={onClose}>Start a project <ArrowUpRight size={19} /></a>}</div></article></div> }
-export default function App() { const root = useRef(null); const [activeProject, setActiveProject] = useState(null); useLayoutEffect(() => { const ctx = gsap.context(() => { gsap.from('.site-header', { y: -25, opacity: 0, duration: .7, ease: 'power3.out' }); gsap.from('.hero h1 span, .hero h1 em', { yPercent: 120, rotate: 2, duration: 1, stagger: .1, delay: .15, ease: 'power4.out' }); gsap.from('.hero-intro, .hero-footer, .hero-kicker', { y: 24, opacity: 0, stagger: .1, delay: .7, duration: .6 }); gsap.utils.toArray('.section, .site-footer').forEach(section => gsap.from(section, { y: 70, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: section, start: 'top 84%' } })); gsap.utils.toArray('.scroll-pop').forEach(sentence => gsap.from(sentence, { y: 34, opacity: 0, rotate: 1, duration: .8, ease: 'back.out(1.4)', scrollTrigger: { trigger: sentence, start: 'top 90%' } })); gsap.utils.toArray('.project-card').forEach((card, index) => gsap.from(card, { y: 80, rotate: 0, opacity: 0, duration: .75, delay: index * .12, scrollTrigger: { trigger: '.project-grid', start: 'top 80%' } })) }, root); return () => ctx.revert() }, []); useLayoutEffect(() => { if (!activeProject) return; const ctx = gsap.context(() => gsap.fromTo('.spotlight-card', { y: 90, rotate: -4, scale: .88, opacity: 0 }, { y: 0, rotate: 0, scale: 1, opacity: 1, duration: .6, ease: 'power4.out' }), root); return () => ctx.revert() }, [activeProject]); return <div className="app-shell" ref={root}><main><Header /><Hero /><Work onSelect={setActiveProject} /><About /><Resume /><Footer /></main><ProjectSpotlight project={activeProject} onClose={() => setActiveProject(null)} /></div> }
