@@ -27,7 +27,7 @@ export default function MagneticButton({ children, className = '', ...props }) {
   return (
     <a
       ref={buttonRef}
-      className={`magnetic ${className}`}
+      className={`magnetic inline-flex cursor-pointer items-center gap-7 rounded-[8px] bg-yellow px-[22px] py-[17px] font-display text-[14px] font-extrabold text-black ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={resetPosition}
       {...props}

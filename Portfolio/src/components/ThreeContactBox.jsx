@@ -238,5 +238,5 @@ export default function ThreeContactBox() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="three-contact-box" aria-hidden="true" />
+  return <canvas ref={canvasRef} className="three-contact-box block size-full" aria-hidden="true" />
 }

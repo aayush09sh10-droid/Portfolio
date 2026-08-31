@@ -7,7 +7,6 @@ import ProjectSpotlight from './components/ProjectSpotlight'
 import Resume from './components/Resume'
 import Work from './components/Work'
 import usePortfolioAnimations from './hooks/usePortfolioAnimations'
-import './App.css'
 
 export default function App() {
   const rootRef = useRef(null)
@@ -16,7 +15,7 @@ export default function App() {
   usePortfolioAnimations(rootRef, activeProject)
 
   return (
-    <div className="app-shell" ref={rootRef}>
+    <div className="app-shell overflow-hidden bg-paper text-ink" ref={rootRef}>
       <main>
         <Header />
         <Hero />
