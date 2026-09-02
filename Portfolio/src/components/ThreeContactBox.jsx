@@ -12,6 +12,28 @@ function createBoxMaterialSet() {
   ]
 }
 
+function createBoxBase() {
+  const base = new THREE.Group()
+  const materials = createBoxMaterialSet()
+  const addPanel = (geometry, position) => {
+    const panel = new THREE.Mesh(geometry, materials)
+    panel.position.set(...position)
+    panel.castShadow = true
+    panel.receiveShadow = true
+    base.add(panel)
+  }
+
+  // Separate panels leave a real, visible cavity instead of a solid cube.
+  addPanel(new THREE.BoxGeometry(4.8, 0.24, 3.2), [0, -1.24, 0])
+  addPanel(new THREE.BoxGeometry(0.24, 2, 3.2), [-2.28, -0.24, 0])
+  addPanel(new THREE.BoxGeometry(0.24, 2, 3.2), [2.28, -0.24, 0])
+  addPanel(new THREE.BoxGeometry(4.32, 2, 0.24), [0, -0.24, -1.48])
+  // A lower front edge keeps the contents and the empty interior visible.
+  addPanel(new THREE.BoxGeometry(4.32, 1.48, 0.24), [0, -0.5, 1.48])
+
+  return base
+}
+
 function addLidPattern(lidPivot) {
   const pattern = new THREE.Group()
   const pinkMaterial = new THREE.MeshStandardMaterial({ color: '#fb087d', roughness: 0.55 })
@@ -98,13 +120,7 @@ export default function ThreeContactBox() {
     boxGroup.scale.setScalar(0.42)
     scene.add(boxGroup)
 
-    const base = new THREE.Mesh(
-      new THREE.BoxGeometry(4.8, 2.2, 3.2),
-      createBoxMaterialSet(),
-    )
-    base.position.y = -0.25
-    base.castShadow = true
-    base.receiveShadow = true
+    const base = createBoxBase()
     boxGroup.add(base)
 
     const lidPivot = new THREE.Group()
