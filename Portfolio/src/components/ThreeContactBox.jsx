@@ -195,7 +195,9 @@ export default function ThreeContactBox() {
       const easedProgress = progress * progress * (3 - 2 * progress)
       const lidProgress = clamp((progress - 0.2) / 0.58)
       const cardProgress = clamp((progress - 0.55) / 0.35)
-      const detailProgress = clamp((progress - 0.82) / 0.18)
+      // Reveal the contact information while the box is opening, so it is
+      // reachable without having to scroll to the very end of the section.
+      const detailProgress = clamp((progress - 0.45) / 0.3)
 
       boxGroup.position.set(
         0,

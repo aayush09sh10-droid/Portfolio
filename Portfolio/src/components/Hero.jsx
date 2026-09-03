@@ -16,9 +16,9 @@ export default function Hero() {
           Hello, I’m Aayush — a full-stack developer turning curious ideas into
           vivid, useful web experiences.
         </p>
-        <h1 className="m-0 min-w-0 font-display text-[clamp(4.3rem,10.7vw,12rem)] leading-[.76] font-extrabold tracking-[-.11em] max-[800px]:text-[17vw]">
-          <span>AAYUSH</span>
-          <span>SHARMA</span>
+        <h1 className="m-0 min-w-0 font-display text-[clamp(4.3rem,10.7vw,12rem)] leading-[.78] font-black tracking-[-.09em] max-[800px]:text-[17vw]">
+          <span className="block">AAYUSH</span>
+          <span className="block ml-[8vw] max-[800px]:ml-[7vw]">SHARMA</span>
           <em className="mt-[14px] ml-[26vw] block -rotate-[4deg] font-[Georgia] text-[clamp(1.6rem,3.1vw,3.7rem)] leading-none font-medium tracking-[-.07em] text-[#6a5f93] max-[800px]:mt-[15px] max-[800px]:ml-[13vw] max-[800px]:text-[7vw]">builds on the web.</em>
         </h1>
       </div>
